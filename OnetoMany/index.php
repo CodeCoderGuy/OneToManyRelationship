@@ -1,5 +1,12 @@
 <?php require_once 'core/dbConfig.php'; ?> 
 <?php require_once 'core/models.php'; ?>
+<?php require_once 'core/handleForms.php'; ?>
+<?php 
+if (!isset($_SESSION['username'])) {
+    header("Location: homepage.php");
+    exit;
+}
+?>
 <!doctype HTML>
 <html lang="en">
 <head>
@@ -22,7 +29,10 @@
     </style>
 </head>
 <body>
-    <h3>Tutor Application Form </h3>
+    <h3>
+        Tutor Application Form <br>
+        <a href="core/handleForms.php?logout=1">Logout</a>
+    </h3>
     <form action="core/handleForms.php" method="POST">
         <p><label for="firstName">First Name: </label><input type="text" name="firstName"></p>
         <p><label for="lastName">Last Name: </label><input type="text" name="lastName"></p>
