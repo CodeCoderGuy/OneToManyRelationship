@@ -122,4 +122,59 @@ function deleteStudent($pdo, $student_id) {
         return true;
     }
 }
+
+function insertNewUser($pdo, $username, $pass_word) {
+    $checkUserSql = "SELECT * FROM passwords WHERE username = ?";
+    $checkUserSql = $pdo->prepare($checkUserSql);
+    $checkUserSql->execute([$username]);
+    if ($checkUserSql->rowCount() == 0) {
+        $sql = "INSERT INTO passwords (username, pass_word) VALUES (?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $executequery = $stmt->execute([$username, $pass_word]);
+        if ($executequery) {
+            $_SESSION['message'] = "User registered successfully!";
+            return true;
+        }
+        else {
+            $_SESSION["message"] = "Error registering user.";
+        }
+
+    } else {
+        $_SESSION["message"] = "Username already exists.";
+    }
+
+}
+
+function loginUser($pdo, $username, $pass_word) {
+    $sql = "SELECT * FROM passwords WHERE username = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+
+    if ($user && $pass_word == $user['pass_word']) {
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['message'] = "Login successful!";
+        return true;
+    }
+
+    $_SESSION['message'] = "Invalid username or password.";
+    return false;
+}
+
+function getAllUsers($pdo) {
+    $sql = "SELECT * FROM passwords";
+    $stmt = $pdo->prepare($sql);
+    if ($stmt->execute()) {
+        return $stmt->fetchAll();
+    }
+}
+
+function getUserbyID($pdo, $user_id) {
+    $sql = "SELECT * FROM passwords WHERE user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $executequery = $stmt->execute([$user_id]);
+    if ($executequery) {
+        return $stmt->fetch();
+    }
+}
 ?>
