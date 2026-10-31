@@ -31,7 +31,7 @@ if (!isset($_SESSION['username'])) {
 <body>
     <h3>
         Tutor Application Form <br>
-        <a href="core/handleForms.php?logout=1">Logout</a>
+        <a href="homepage.php">Back to Homepage</a>
     </h3>
     <form action="core/handleForms.php" method="POST">
         <p><label for="firstName">First Name: </label><input type="text" name="firstName"></p>
@@ -49,9 +49,13 @@ if (!isset($_SESSION['username'])) {
             <th>Tutor ID</th>
             <th>First Name</th>
             <th>Last Name</th>
-                <th>Email</th>
+            <th>Email</th>
             <th>Phone Number</th>
             <th>Specialty</th>
+            <th>Date Added</th>
+		    <th>Last Updated by</th>
+		    <th>Added by</th>
+		    <th>Updated by</th>
         </tr>
         <?php $seeAllTutors = seeAllTutors($pdo); ?>
         <?php foreach($seeAllTutors as $tutor) { ?>
@@ -62,11 +66,19 @@ if (!isset($_SESSION['username'])) {
                 <td><?php echo $tutor['email']; ?></td>
                 <td><?php echo $tutor['phone_number']; ?></td>
                 <td><?php echo $tutor['specialty']; ?></td>
+                <td><?php echo $tutor['date_added']; ?></td>
+                <td><?php echo $tutor['last_updated']; ?></td>
+                <td><?php echo $tutor['added_by']; ?></td>
+                <td><?php echo $tutor['updated_by']; ?></td>
                 <td>
                     <a href="viewStudents.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">View Students</a>
                     <a href="EditTutor.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">Edit</a>
                     <a href="DeleteTutor.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">Delete</a>
                 </td>
+                <?php if (isset($_SESSION['message'])) { ?>
+                <h3 style="color: green;"><?php echo $_SESSION['message']; ?></h3>
+                <?php unset($_SESSION['message']); ?>
+                <?php } ?>
             </tr>
         <?php } ?>
     </table>
