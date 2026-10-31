@@ -1,5 +1,13 @@
-<?php require_once 'core/models.php'; ?>
-<?php require_once 'core/dbConfig.php'; ?>
+<?php
+require_once 'core/dbConfig.php';
+require_once 'core/models.php';
+require_once 'core/handleForms.php';
+
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,6 +56,9 @@
 	    <th>Email</th>
 	    <th>Phone Number</th>
 	    <th>Date Added</th>
+		<th>Last Updated by</th>
+		<th>Added by</th>
+		<th>Updated by</th>
 	  </tr>
 	  <?php $getStudentsByTutor = getStudentsByTutor($pdo, $_GET['tutor_id']); ?>
 	  <?php foreach ($getStudentsByTutor as $row) { ?>
@@ -58,10 +69,17 @@
 	  	<td><?php echo $row['email']; ?></td>	  	
 	  	<td><?php echo $row['phone_number']; ?></td>	  	 	 	
 	  	<td><?php echo $row['date_added']; ?></td>
+		<td><?php echo $row['last_updated']; ?></td>
+		<td><?php echo $row['added_by']; ?></td>
+		<td><?php echo $row['updated_by']; ?></td>
 	  	<td>
 	  		<a href="editStudent.php?student_id=<?php echo $row['student_id']; ?>&tutor_id=<?php echo $_GET['tutor_id']; ?>">Edit</a>
 	  		<a href="deleteStudent.php?student_id=<?php echo $row['student_id']; ?>&tutor_id=<?php echo $_GET['tutor_id']; ?>">Delete</a>
 	  	</td>	  	
+		<?php if (isset($_SESSION['message'])) { ?>
+    		<h3 style="color: green;"><?php echo $_SESSION['message']; ?></h3>
+    	<?php unset($_SESSION['message']); ?>
+			<?php } ?>
 	  </tr>
       <?php } ?>
 	</table>
