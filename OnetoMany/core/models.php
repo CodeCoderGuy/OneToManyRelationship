@@ -1,16 +1,10 @@
 <?php
 require_once 'dbConfig.php';
-function insertTutor($pdo, $firstName, $lastName, $email, $phone_number, $specialty) {
-    $sql = "INSERT INTO tutors (first_Name, last_Name, email, phone_number, specialty) 
-    VALUES (?, ?, ?, ?, ?)";
-
+function insertTutor($pdo, $firstName, $lastName, $email, $phone_number, $specialty, $added_by) {
+    $sql = "INSERT INTO tutors (first_name, last_name, email, phone_number, specialty, added_by, updated_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-
-    $executequery = $stmt->execute([$firstName, $lastName, $email, $phone_number, $specialty]);
-
-    if($executequery) {
-        return true;
-    }
+    return $stmt->execute([$firstName, $lastName, $email, $phone_number, $specialty, $added_by, $added_by]);
 }
 
 function seeTutorsbyID($pdo, $tutor_id) {
@@ -45,22 +39,12 @@ function getStudent($pdo, $student_id) {
         return $stmt->fetch();
     }
 }
-function updateTutor($pdo, $tutor_id, $firstName, $lastName, $email, $phone_number, $specialty) {
-    $sql = "UPDATE tutors    
-				SET first_name = ?, 
-					last_name = ?, 
-					email = ?, 
-					phone_number = ?, 
-                    specialty = ?
-			WHERE tutor_id = ?";
-	$stmt = $pdo->prepare($sql);
-	
-	$executeQuery = $stmt->execute([$firstName, $lastName, $email, $phone_number, $specialty, $tutor_id]);
-
-	if ($executeQuery) {
-		return true;
-	}
-	
+function updateTutor($pdo, $tutor_id, $firstName, $lastName, $email, $phone_number, $specialty, $updated_by) {
+    $sql = "UPDATE tutors
+            SET first_name = ?, last_name = ?, email = ?, phone_number = ?, specialty = ?, updated_by = ?
+            WHERE tutor_id = ?";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([$firstName, $lastName, $email, $phone_number, $specialty, $updated_by, $tutor_id]);
 }
 
 function deleteTutor($pdo, $tutor_id) {
@@ -79,39 +63,32 @@ function deleteTutor($pdo, $tutor_id) {
 }
 
 function getStudentsbyTutor($pdo, $tutor_id) {
-    $sql = "SELECT student_id, students.date_added, students.first_name, students.last_name, students.email, students.phone_number, CONCAT(tutors.first_name, ' ', tutors.last_name) AS tutor_name 
-            FROM students JOIN tutors ON students.tutor_id = tutors.tutor_id WHERE students.tutor_id = ? GROUP BY students.last_name";
+    $sql = "SELECT students.student_id, students.first_name, students.last_name, students.email, students.phone_number,
+                   students.date_added, students.last_updated, students.added_by, students.updated_by,
+                   CONCAT(tutors.first_name, ' ', tutors.last_name) AS tutor_name
+            FROM students
+            JOIN tutors ON students.tutor_id = tutors.tutor_id
+            WHERE students.tutor_id = ?
+            ORDER BY students.last_name";
     $stmt = $pdo->prepare($sql);
-    if($stmt->execute([$tutor_id])) {
+    if ($stmt->execute([$tutor_id])) {
         return $stmt->fetchAll();
     }
 }
 
-function insertStudent($pdo, $firstName, $lastName, $email, $phone_number, $tutor_id) {
-    $sql = "INSERT INTO students (first_Name, last_Name, email, phone_number, tutor_id) 
-    VALUES (?, ?, ?, ?, ?)";
-
+function insertStudent($pdo, $firstName, $lastName, $email, $phone_number, $tutor_id, $added_by) {
+    $sql = "INSERT INTO students (first_name, last_name, email, phone_number, tutor_id, added_by, updated_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-
-    $executequery = $stmt->execute([$firstName, $lastName, $email, $phone_number, $tutor_id]);
-
-    if($executequery) {
-        return true;
-    }
+    return $stmt->execute([$firstName, $lastName, $email, $phone_number, $tutor_id, $added_by, $added_by]);
 }
 
-function updateStudent($pdo, $student_id, $firstName, $lastName, $email, $phone_number) {
-    $sql = "UPDATE students    
-                SET first_name = ?, 
-                    last_name = ?, 
-                    email = ?, 
-                    phone_number = ? 
-                WHERE student_id = ?";
+function updateStudent($pdo, $firstName, $lastName, $email, $phone_number, $updated_by, $student_id) {
+    $sql = "UPDATE students
+            SET first_name = ?, last_name = ?, email = ?, phone_number = ?, updated_by = ?
+            WHERE student_id = ?";
     $stmt = $pdo->prepare($sql);
-    $executeQuery = $stmt->execute([$student_id, $firstName, $lastName, $email, $phone_number]);  
-    if($executeQuery) {
-        return true;
-    }
+    return $stmt->execute([$firstName, $lastName, $email, $phone_number, $updated_by, $student_id]);
 }
 
 function deleteStudent($pdo, $student_id) {
@@ -177,4 +154,3 @@ function getUserbyID($pdo, $user_id) {
         return $stmt->fetch();
     }
 }
-?>
