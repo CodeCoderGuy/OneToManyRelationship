@@ -1,5 +1,13 @@
-<?php require_once 'core/dbConfig.php'; ?>
-<?php require_once 'core/models.php'; ?>
+<?php
+require_once 'core/dbConfig.php';
+require_once 'core/models.php';
+require_once 'core/handleForms.php';
+
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
