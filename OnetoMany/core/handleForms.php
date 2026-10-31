@@ -90,3 +90,57 @@ if (isset($_POST["deleteStudentBtn"])) {
         echo "Error deleting student.";
     }
 }
+if (isset($_POST["insertNewUser"])) {
+    $username = trim($_POST["username"]);
+    $pass_word = trim(sha1($_POST["pass_word"]));
+
+    if (!empty($username) && !empty($pass_word)) {
+        $query = insertNewUser($pdo, $username, $pass_word);
+
+        if ($query) {
+            header("Location: ../index.php");
+        } else {
+            $_SESSION['message'] = "Error inserting user.";
+            header("Location: ../register.php");
+        }
+    } else {
+        $_SESSION['message'] = "Please fill in all required fields.";
+        header("Location: ../register.php");
+    }
+}
+
+if (isset($_POST["loginUser"])) {
+    $username = trim($_POST["username"]);
+    $pass_word = trim(sha1($_POST["pass_word"]));
+
+    if (!empty($username) && !empty($pass_word)) {
+        $query = loginUser($pdo, $username, $pass_word);
+
+        if ($query) {
+            header("Location: ../homepage.php");
+        } else {
+            $_SESSION['message'] = "Invalid username or password.";
+            header("Location: ../login.php");
+        }
+    } else {
+        $_SESSION['message'] = "Please fill in all required fields.";
+        header("Location: ../login.php");
+    }
+}
+
+if (isset($_GET["logout"])) {
+    unset($_SESSION["username"]);
+    header("Location: ../homepage.php");
+}
+
+if (isset($_GET["deleteUser"])) {
+    $sql = "DELETE FROM passwords WHERE user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $query = $stmt->execute([$_GET["deleteUser"]]);
+    if ($query) {
+        header("Location: ../homepage.php");
+        exit;
+    } else {
+
+}
+}
