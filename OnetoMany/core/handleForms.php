@@ -10,7 +10,7 @@ if (isset($_POST['insertNewTutor'])) {
     $specialty = trim($_POST['specialty']);
 
     if (!empty($firstName) && !empty($lastName) && !empty($email) && !empty($phone_number) && !empty($specialty)) {
-    $query = insertTutor($pdo, $firstName, $lastName, $email, $phone_number, $specialty);
+    $query = insertTutor($pdo, $firstName, $lastName, $email, $phone_number, $specialty, $_SESSION['username']);
     
         if ($query) {
             header("Location: ../index.php");
@@ -26,6 +26,7 @@ if (isset($_POST['deleteTutorBtn'])) {
     $query = deleteTutor($pdo, $_GET['tutor_id']);
     
     if ($query) {
+        $_SESSION['message'] = "Student deleted successfully by " . $_SESSION['username'] . ".";
         header("Location: ../index.php");
     } else {
         echo "Error deleting tutor.";
@@ -43,10 +44,12 @@ if (isset($_POST['editTutorBtn'])) {
 
 	if (!empty($tutor_id) && !empty($firstName) && !empty($lastName) && !empty($email) && !empty($phone_number) && !empty($specialty)) {
 
-		$query = updateTutor($pdo, $tutor_id, $firstName, $lastName, $email, $phone_number, $specialty);
+		$query = updateTutor($pdo, $tutor_id, $firstName, $lastName, $email, $phone_number, $specialty, $_SESSION['username']);
 
 		if ($query) {
+            $_SESSION['message'] = "Tutor updated successfully by " . $_SESSION['username'] . ".";
 			header("Location: ../index.php");
+            
 		}
 		else {
 			echo "Update failed";
@@ -60,7 +63,7 @@ if (isset($_POST['editTutorBtn'])) {
 }
 
 if (isset($_POST["insertStudentBtn"])) {
-    $query = insertStudent($pdo, $_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["phone_number"], $_GET["tutor_id"]);
+   $query = insertStudent($pdo, $_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["phone_number"], $_GET["tutor_id"], $_SESSION['username']);
     if ($query) {
         header("Location: ../viewStudents.php?tutor_id=" . $_GET['tutor_id']);
     } else {
@@ -69,10 +72,10 @@ if (isset($_POST["insertStudentBtn"])) {
 }
 
 if (isset($_POST["editStudentBtn"])) {
-        $query = updateStudent($pdo, $_POST['firstName'], $_POST['lastName'], $_POST['email'], $_POST['phone_number'], $_POST['student_id']);
-
+        $query = updateStudent($pdo, $_POST['firstName'], $_POST['lastName'], $_POST['email'], $_POST['phone_number'], $_SESSION['username'], $_POST['student_id']);
         if ($query) {
             $student = getStudent($pdo, $_POST['student_id']);
+            $_SESSION['message'] = "Student updated successfully by " . $_SESSION['username'] . ".";
             header("Location: ../viewStudents.php?tutor_id=" . (int)$_POST['tutor_id']);
         } else {
             echo "Error updating student.";
@@ -82,14 +85,17 @@ if (isset($_POST["editStudentBtn"])) {
 
 
 if (isset($_POST["deleteStudentBtn"])) {
+    $student = getStudent($pdo, $_GET["student_id"]);
     $query = deleteStudent($pdo, $_GET["student_id"]);
     if ($query) {
-        header("Location: ../viewStudents.php?tutor_id=" . $_POST['tutor_id']);
+        $_SESSION['message'] = "Student deleted successfully by " . $_SESSION['username'] . ".";
+         header("Location: ../viewStudents.php?tutor_id=" . (int)$student['tutor_id']);
     }
     else {
         echo "Error deleting student.";
     }
 }
+
 if (isset($_POST["insertNewUser"])) {
     $username = trim($_POST["username"]);
     $pass_word = trim(sha1($_POST["pass_word"]));
