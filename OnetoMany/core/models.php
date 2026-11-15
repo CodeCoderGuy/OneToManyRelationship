@@ -166,3 +166,27 @@ function getUserbyID($pdo, $user_id) {
         return $stmt->fetch();
     }
 }
+function searchUsers($pdo, $searchTerm) {
+    $sql = "SELECT * FROM passwords WHERE username LIKE ?";
+    $stmt = $pdo->prepare($sql);
+    $executequery = $stmt->execute(['%' . $searchTerm . '%']);
+    if ($executequery) {
+        return $stmt->fetchAll();
+    }
+}
+function searchTutors($pdo, $searchTerm) {
+    $sql = "SELECT * FROM tutors WHERE concat(first_name, last_name, email, phone_number, specialty) LIKE ?";
+    $stmt = $pdo->prepare($sql);
+    $executequery = $stmt->execute(['%' . $searchTerm . '%']);
+    if ($executequery) {
+        return $stmt->fetchAll();
+    }
+}
+function searchStudents($pdo, $searchTerm) {
+    $sql = "SELECT * FROM students WHERE concat(first_name, last_name, email, phone_number) LIKE ?";
+    $stmt = $pdo->prepare($sql);
+    $executequery = $stmt->execute(['%' . $searchTerm . '%']);
+    if ($executequery) {
+        return $stmt->fetchAll();
+    }
+}
