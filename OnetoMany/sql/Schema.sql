@@ -27,7 +27,7 @@
     CREATE TABLE passwords(
         user_id INTEGER PRIMARY KEY AUTO_INCREMENT,
         username VARCHAR(100) NOT NULL,
-        pass_word VARCHAR(255) NOT NULL,
+        pass_word TEXT NOT NULL,
         date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
