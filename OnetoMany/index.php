@@ -43,6 +43,11 @@ if (!isset($_SESSION['username'])) {
         <input type="submit" value="Submit Application" name="insertNewTutor">
     </form>
     <br>
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="GET">
+        <input type="text" name="Search" placeholder="Search Here">
+        <input type="submit" name="SearchBtn">
+    </form>
+    <br>
     <h3>List of Tutors</h3>
     <table style="width 50%; margin-top 50px; border: 3px black solid;">
         <tr>
@@ -57,6 +62,7 @@ if (!isset($_SESSION['username'])) {
 		    <th>Added by</th>
 		    <th>Updated by</th>
         </tr>
+        <?php if (!isset($_GET['SearchBtn'])) { ?>
         <?php $seeAllTutors = seeAllTutors($pdo); ?>
         <?php foreach($seeAllTutors as $tutor) { ?>
             <tr>
@@ -80,7 +86,26 @@ if (!isset($_SESSION['username'])) {
                 <?php unset($_SESSION['message']); ?>
                 <?php } ?>
             </tr>
-        <?php } ?>
+        <?php }} else { ?>
+            <?php $searchTutor = searchTutors($pdo, $_GET['Search']); ?>
+                 <?php foreach($searchTutor as $tutor) { ?>
+            <tr>
+                <td><?php echo $tutor['tutor_id']; ?></td>
+                <td><?php echo $tutor['first_name']; ?></td>
+                <td><?php echo $tutor['last_name']; ?></td>
+                <td><?php echo $tutor['email']; ?></td>
+                <td><?php echo $tutor['phone_number']; ?></td>
+                <td><?php echo $tutor['specialty']; ?></td>
+                <td><?php echo $tutor['date_added']; ?></td>
+                <td><?php echo $tutor['last_updated']; ?></td>
+                <td><?php echo $tutor['added_by']; ?></td>
+                <td><?php echo $tutor['updated_by']; ?></td>
+                <td>
+                    <a href="viewStudents.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">View Students</a>
+                    <a href="EditTutor.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">Edit</a>
+                    <a href="DeleteTutor.php?tutor_id=<?php echo $tutor['tutor_id']; ?>">Delete</a>
+                </td>
+        <?php }} ?>
     </table>
 
 </body>
