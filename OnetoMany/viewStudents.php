@@ -47,6 +47,11 @@ if (!isset($_SESSION['username'])) {
 			<input type="submit" name="insertStudentBtn" value="Add Student">
 		</p>
 	</form>
+	<form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="GET">
+		<input type="hidden" name="tutor_id" value="<?php echo $_GET['tutor_id']; ?>">
+		<input type="text" name="Search" placeholder="Search Here">
+		<input type="submit" name="SearchBtn">
+	</form>
     <h3>List of Students</h3>
 	<table style="width 50%; margin-top 50px; border: 3px black solid;">
 	  <tr>
@@ -60,6 +65,7 @@ if (!isset($_SESSION['username'])) {
 		<th>Added by</th>
 		<th>Updated by</th>
 	  </tr>
+      <?php if (!isset($_GET['SearchBtn'])) { ?>
 	  <?php $getStudentsByTutor = getStudentsByTutor($pdo, $_GET['tutor_id']); ?>
 	  <?php foreach ($getStudentsByTutor as $row) { ?>
 	  <tr>
@@ -81,7 +87,24 @@ if (!isset($_SESSION['username'])) {
     	<?php unset($_SESSION['message']); ?>
 			<?php } ?>
 	  </tr>
-      <?php } ?>
+      <?php }} else { ?>
+            <?php $searchStudent = searchStudents($pdo, $_GET['Search'], $_GET['tutor_id']); ?>
+                 <?php foreach($searchStudent as $row) { ?>
+            <tr>
+                <td><?php echo $row['student_id']; ?></td>
+                <td><?php echo $row['first_name']; ?></td>
+                <td><?php echo $row['last_name']; ?></td>
+                <td><?php echo $row['email']; ?></td>
+                <td><?php echo $row['phone_number']; ?></td>
+                <td><?php echo $row['date_added']; ?></td>
+                <td><?php echo $row['last_updated']; ?></td>
+                <td><?php echo $row['added_by']; ?></td>
+                <td><?php echo $row['updated_by']; ?></td>
+                <td>
+					<a href="editStudent.php?student_id=<?php echo $row['student_id']; ?>&tutor_id=<?php echo $_GET['tutor_id']; ?>">Edit</a>
+	  				<a href="deleteStudent.php?student_id=<?php echo $row['student_id']; ?>&tutor_id=<?php echo $_GET['tutor_id']; ?>">Delete</a>
+                </td>
+        <?php }} ?>
 	</table>
 
 	
