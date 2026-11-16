@@ -180,13 +180,30 @@ function searchTutors($pdo, $searchTerm) {
     $executequery = $stmt->execute(['%' . $searchTerm . '%']);
     if ($executequery) {
         return $stmt->fetchAll();
-    }
+    } 
 }
-function searchStudents($pdo, $searchTerm) {
-    $sql = "SELECT * FROM students WHERE concat(first_name, last_name, email, phone_number) LIKE ?";
+function searchStudents($pdo, $searchTerm, $tutor_id) {
+    $sql = "SELECT * FROM students 
+            WHERE tutor_id = ? 
+            AND concat_ws(' ', first_name, last_name, email, phone_number) LIKE ?";
     $stmt = $pdo->prepare($sql);
-    $executequery = $stmt->execute(['%' . $searchTerm . '%']);
-    if ($executequery) {
-        return $stmt->fetchAll();
-    }
+    $stmt->execute([$tutor_id, '%' . $searchTerm . '%']);
+    return $stmt->fetchAll();
+}
+
+function checkIfExists($pdo, $first_name) {
+    $response = array();
+    $sql = 'SELECT FROM tutors WHERE first_name = ?';
+    $stmt = $pdo->prepare($sql);
+
+    if ($stmt->execute([$first_name])) {
+        $infoArray = $stmt->fetch();
+            if ($stmt->rowCount() > 0) {
+                $response = array( "results"=> true, "status"=> "200", "InfoArray" => $infoArray);
+            }
+            else {
+                $response = array("status"=> "400", "message"=> "Tutor/Student does not Exist from the Database" );
+
+            }
+    } return $response;
 }
